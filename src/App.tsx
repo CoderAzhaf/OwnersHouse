@@ -64,6 +64,20 @@ function App() {
       weapons: []
     },
     {
+      id: '3',
+      username: 'AZHA',
+      password: 'Mohammed',
+      fullName: 'AZHA',
+      role: 'founder',
+      ohis: Infinity,
+      health: Infinity,
+      isAdmin: true,
+      joinDate: new Date().toISOString(),
+      banned: false,
+      warnings: 0,
+      weapons: []
+    },
+    {
       id: '2',
       username: 'demo',
       password: 'demo123',
