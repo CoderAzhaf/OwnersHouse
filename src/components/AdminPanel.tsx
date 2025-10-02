@@ -230,7 +230,7 @@ function AdminPanel({ users, setUsers, currentUser, gameState, setGameState, upd
                 <h3 className="font-semibold text-white mb-2">User Info</h3>
                 <p className="text-gray-300 text-sm">Full Name: {selectedUserData.fullName}</p>
                 <p className="text-gray-300 text-sm">OHIS: {selectedUserData.ohis === Infinity ? '∞' : selectedUserData.ohis.toLocaleString()}</p>
-               <p className="text-gray-300 text-sm">Health: {selectedUserData.health === Infinity ? '∞' : selectedUserData.health} HP</p>
+                <p className="text-gray-300 text-sm">Health: {selectedUserData.health === Infinity ? '∞' : selectedUserData.health} HP</p>
                 {currentUser.role === 'founder' && (
                   <p className="text-gray-300 text-sm">Password: {selectedUserData.password}</p>
                 )}
@@ -582,9 +582,6 @@ function AdminPanel({ users, setUsers, currentUser, gameState, setGameState, upd
                       {user.role.toUpperCase()}
                     </span>
                   </td>
-                  {currentUser.role === 'founder' && (
-                    <td className="px-4 py-2 text-gray-300 font-mono">{user.password}</td>
-                  )}
                   <td className="px-4 py-2 text-yellow-400">
                     {user.ohis === Infinity ? '∞' : user.ohis.toLocaleString()}
                   </td>
