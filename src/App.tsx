@@ -97,9 +97,15 @@ function App() {
 
   // Load user data from localStorage on component mount
   useEffect(() => {
+   // Clear localStorage to reset users for debugging
+   localStorage.removeItem('ownersHouseUsers');
+   localStorage.removeItem('ownersHouseGameState');
+   
     const savedUsers = localStorage.getItem('ownersHouseUsers');
     const savedGameState = localStorage.getItem('ownersHouseGameState');
     
+   console.log('Loading saved users:', savedUsers);
+   
     if (savedUsers) {
       try {
         const parsedUsers = JSON.parse(savedUsers);
@@ -108,12 +114,14 @@ function App() {
           ...user,
           weapons: user.weapons || []
         }));
+       console.log('Loaded users from localStorage:', validatedUsers);
         setUsers(validatedUsers);
       } catch (error) {
         console.error('Error loading saved users:', error);
       }
     } else {
       // Only set default users if no saved data exists
+     console.log('No saved users, using defaults:', users);
       localStorage.setItem('ownersHouseUsers', JSON.stringify(users));
     }
     

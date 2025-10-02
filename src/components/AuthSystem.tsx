@@ -23,10 +23,15 @@ function AuthSystem({ users, onLogin, setUsers }: AuthSystemProps) {
 
     if (isLogin) {
       // Login
+     console.log('Attempting login with:', formData.username, formData.password);
+     console.log('Available users:', users.map(u => ({ username: u.username, password: u.password })));
+     
       const user = users.find(u => 
         u.username === formData.username && u.password === formData.password
       );
       
+     console.log('Found user:', user);
+     
       if (!user) {
         setError('Invalid username or password');
         return;
