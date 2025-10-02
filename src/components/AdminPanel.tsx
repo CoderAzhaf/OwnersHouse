@@ -575,7 +575,7 @@ function AdminPanel({ users, setUsers, currentUser, gameState, setGameState, upd
                   <td className="px-4 py-2 text-gray-300">{user.fullName}</td>
                   <td className="px-4 py-2">
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      user.role === 'founder' ? 'bg-gold-600 text-black' :
+                      user.role === 'founder' ? 'bg-yellow-600 text-black' :
                       user.role === 'admin' ? 'bg-purple-600 text-white' :
                       'bg-gray-600 text-white'
                     }`}>
