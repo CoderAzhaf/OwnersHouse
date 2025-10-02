@@ -51,9 +51,9 @@ function App() {
   const [users, setUsers] = useState<User[]>([
     {
       id: '1',
-      username: 'Mohammed Azhafuddin',
+      username: 'CEO',
       password: 'qBAO5214',
-      fullName: 'Mohammed Azhafuddin',
+      fullName: 'Mohammed Azhafuddin (CEO)',
       role: 'founder',
       ohis: Infinity,
       health: Infinity,
