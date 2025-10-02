@@ -83,6 +83,10 @@ function App() {
 
   // Load user data from localStorage on component mount
   useEffect(() => {
+    // Clear localStorage to reset to new default users (temporary fix)
+    localStorage.removeItem('ownersHouseUsers');
+    localStorage.removeItem('ownersHouseGameState');
+    
     const savedUsers = localStorage.getItem('ownersHouseUsers');
     const savedGameState = localStorage.getItem('ownersHouseGameState');
     
