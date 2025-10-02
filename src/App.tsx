@@ -83,10 +83,6 @@ function App() {
 
   // Load user data from localStorage on component mount
   useEffect(() => {
-    // Clear localStorage to reset to new default users (temporary fix)
-    localStorage.removeItem('ownersHouseUsers');
-    localStorage.removeItem('ownersHouseGameState');
-    
     const savedUsers = localStorage.getItem('ownersHouseUsers');
     const savedGameState = localStorage.getItem('ownersHouseGameState');
     
@@ -102,6 +98,9 @@ function App() {
       } catch (error) {
         console.error('Error loading saved users:', error);
       }
+    } else {
+      // Only set default users if no saved data exists
+      localStorage.setItem('ownersHouseUsers', JSON.stringify(users));
     }
     
     if (savedGameState) {
@@ -110,12 +109,15 @@ function App() {
         setGameState(prev => ({
           ...prev,
           ...parsedGameState,
-          guardPosition: prev.guardPosition, // Keep current guard position
-          guardHealth: prev.guardHealth // Keep current guard health
+          guardPosition: { x: 50, y: 50 }, // Reset guard position
+          guardHealth: parsedGameState.guardHealth || prev.guardHealth // Keep saved guard health
         }));
       } catch (error) {
         console.error('Error loading saved game state:', error);
       }
+    } else {
+      // Only set default game state if no saved data exists
+      localStorage.setItem('ownersHouseGameState', JSON.stringify(gameState));
     }
   }, []);
 
@@ -126,7 +128,12 @@ function App() {
 
   // Save game state to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('ownersHouseGameState', JSON.stringify(gameState));
+    // Save game state but preserve dynamic properties
+    const gameStateToSave = {
+      ...gameState,
+      guardPosition: { x: 50, y: 50 } // Don't save dynamic guard position
+    };
+    localStorage.setItem('ownersHouseGameState', JSON.stringify(gameStateToSave));
   }, [gameState]);
   const handleLogin = (user: User) => {
     // Find the most up-to-date user data
