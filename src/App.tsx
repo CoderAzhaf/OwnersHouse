@@ -79,6 +79,20 @@ function App() {
     },
     {
       id: '2',
+      username: 'Ahsan',
+      password: 'Suleman',
+      fullName: 'Suleman Ahsan',
+      role: 'admin',
+      ohis: 50000,
+      health: 150,
+      isAdmin: true,
+      joinDate: new Date().toISOString(),
+      banned: false,
+      warnings: 0,
+      weapons: []
+    },
+    {
+      id: '4',
       username: 'demo',
       password: 'demo123',
       fullName: 'Demo Player',
