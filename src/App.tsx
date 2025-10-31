@@ -118,6 +118,20 @@ function App() {
       banned: false,
       warnings: 0,
       weapons: []
+    },
+    {
+      id: '6',
+      username: 'dash',
+      password: 'dash321',
+      fullName: 'Vivvan Dash',
+      role: 'admin',
+      ohis: 9999999,
+      health: 100,
+      isAdmin: true,
+      joinDate: new Date().toISOString(),
+      banned: false,
+      warnings: 0,
+      weapons: []
     }
   ]);
 
