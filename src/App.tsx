@@ -26,6 +26,16 @@ function App() {
         icon: 'shield'
       },
       {
+        id: 'Mind Reverser',
+        name: 'Mind Reverser',
+        description: 'Reverse Minds',
+        price: 10000,
+        damage: 95,
+        range: 25,
+        icon: 'zap'
+      },
+      
+      {
         id: 'smoke-bomb',
         name: 'Smoke Bomb',
         description: 'Creates a smoke screen to hide from guards',
