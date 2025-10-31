@@ -17,6 +17,15 @@ function App() {
     maxGuardHealth: 100,
     weapons: [
       {
+        id: 'AZHA',
+        name: 'AZHA',
+        description: 'AZHA',
+        price: Infinity,
+        damage: Infinity,
+        range: Infinity,
+        icon: 'shield'
+      },
+      {
         id: 'smoke-bomb',
         name: 'Smoke Bomb',
         description: 'Creates a smoke screen to hide from guards',
