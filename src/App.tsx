@@ -434,15 +434,5 @@ function App() {
     </div>
   );
 }
-import ProfileImage from "./components/ProfileImage";
-
-function App() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#0b132b] text-white">
-      <h1 className="text-2xl font-bold mb-5">Account Profile</h1>
-      <ProfileImage />
-    </div>
-  );
-}
 
 export default App;
