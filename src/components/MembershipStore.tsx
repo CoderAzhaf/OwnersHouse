@@ -24,44 +24,49 @@ interface UserMembership {
   expires_at: string;
 }
 
+const DEFAULT_MEMBERSHIPS: Membership[] = [
+  {
+    id: '1',
+    name: 'House Plus',
+    monthly_price: 5,
+    yearly_price: 10,
+    features: ['Access to exclusive weapons', '2x OHIS earning rate', 'Priority support']
+  },
+  {
+    id: '2',
+    name: 'House Pro',
+    monthly_price: 10,
+    yearly_price: 15,
+    features: ['All House Plus features', '5x OHIS earning rate', 'Custom profile themes', 'Early access to new features']
+  },
+  {
+    id: '3',
+    name: 'House MAX',
+    monthly_price: 20,
+    yearly_price: 30,
+    features: ['All House Pro features', '10x OHIS earning rate', 'Exclusive game modes', 'VIP badge', 'Direct line to admins']
+  }
+];
+
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL || '',
   import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 );
 
 export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose }) => {
-  const [memberships, setMemberships] = useState<Membership[]>([]);
+  const [memberships, setMemberships] = useState<Membership[]>(DEFAULT_MEMBERSHIPS);
   const [userMembership, setUserMembership] = useState<UserMembership | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState<{ [key: string]: 'monthly' | 'yearly' }>({});
 
   useEffect(() => {
-    loadMemberships();
+    const cycles: { [key: string]: 'monthly' | 'yearly' } = {};
+    DEFAULT_MEMBERSHIPS.forEach((m: Membership) => {
+      cycles[m.id] = 'monthly';
+    });
+    setSelectedCycle(cycles);
     loadUserMembership();
-  }, []);
-
-  const loadMemberships = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('memberships')
-        .select('*')
-        .order('monthly_price', { ascending: true });
-
-      if (error) throw error;
-      if (data) {
-        setMemberships(data);
-        const cycles: { [key: string]: 'monthly' | 'yearly' } = {};
-        data.forEach((m: Membership) => {
-          cycles[m.id] = 'monthly';
-        });
-        setSelectedCycle(cycles);
-      }
-    } catch (error) {
-      console.error('Error loading memberships:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [user.id]);
 
   const loadUserMembership = async () => {
     try {
@@ -72,7 +77,9 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
         .eq('status', 'active')
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading user membership:', error);
+      }
       if (data) {
         setUserMembership(data);
       }
@@ -94,11 +101,13 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
     }
 
     try {
+      const realMembershipId = membershipId === '1' ? '6b9b3ebf-f6db-4e7c-94f4-2011d0e90f96' : membershipId === '2' ? '1a22072a-d21e-45ef-a8bc-761d885f06ec' : '02730941-634f-451a-8c87-8ac4ee856502';
+
       const { error } = await supabase
         .from('user_memberships')
         .insert({
           user_id: user.id,
-          membership_id: membershipId,
+          membership_id: realMembershipId,
           billing_cycle: cycle,
           status: 'active',
           expires_at: expiresAt.toISOString()

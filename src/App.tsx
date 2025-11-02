@@ -406,7 +406,7 @@ function App() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentView === 'game' && (
-          <GamePlayground 
+          <GamePlayground
             currentUser={currentUser}
             gameState={gameState}
             setGameState={setGameState}
@@ -414,9 +414,9 @@ function App() {
             updateUserHealth={updateUserHealth}
           />
         )}
-        
+
         {currentView === 'admin' && currentUser.isAdmin && (
-          <AdminPanel 
+          <AdminPanel
             users={users}
             setUsers={setUsers}
             currentUser={currentUser}
@@ -425,14 +425,14 @@ function App() {
             updateUserHealth={updateUserHealth}
           />
         )}
-        
+
         {currentView === 'profile' && (
-          <UserProfile 
+          <UserProfile
             currentUser={currentUser}
             users={users}
           />
         )}
-        
+
         {currentView === 'store' && (
           <WeaponStore
             user={currentUser}
@@ -441,14 +441,14 @@ function App() {
             onClose={() => setCurrentView('game')}
           />
         )}
-
-        {currentView === 'membership' && (
-          <MembershipStore
-            user={currentUser}
-            onClose={() => setCurrentView('game')}
-          />
-        )}
       </main>
+
+      {currentView === 'membership' && (
+        <MembershipStore
+          user={currentUser}
+          onClose={() => setCurrentView('game')}
+        />
+      )}
     </div>
   );
 }
