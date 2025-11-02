@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function ProfileImage() {
   const [image, setImage] = useState<string | null>(
-    localStorage.getItem("profileImage")
+    localStorage.getItem("favicon.ico.png")
   );
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
