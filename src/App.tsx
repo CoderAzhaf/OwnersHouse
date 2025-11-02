@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Users, Settings, Coins, Swords, Timer, AlertTriangle } from 'lucide-react';
+import { Shield, Users, Settings, Coins, Swords, Timer, AlertTriangle, Crown } from 'lucide-react';
 import AuthSystem from './components/AuthSystem';
 import GamePlayground from './components/GamePlayground';
 import AdminPanel from './components/AdminPanel';
 import UserProfile from './components/UserProfile';
 import { WeaponStore } from './components/WeaponStore';
+import { MembershipStore } from './components/MembershipStore';
 import { User, GameState } from './types/game';
 
 function App() {
@@ -154,7 +155,7 @@ function App() {
     }
   ]);
 
-  const [currentView, setCurrentView] = useState<'game' | 'admin' | 'profile' | 'store'>('game');
+  const [currentView, setCurrentView] = useState<'game' | 'admin' | 'profile' | 'store' | 'membership'>('game');
 
   // Load user data from localStorage on component mount
   useEffect(() => {
@@ -329,7 +330,17 @@ function App() {
                 <Swords className="h-4 w-4 inline mr-2" />
                 Weapon Store
               </button>
-              
+
+              <button
+                onClick={() => setCurrentView('membership')}
+                className={`px-4 py-2 rounded-lg transition-all ${
+                  currentView === 'membership' ? 'bg-yellow-600 text-white' : 'text-gray-300 hover:text-white'
+                }`}
+              >
+                <Crown className="h-4 w-4 inline mr-2" />
+                Membership
+              </button>
+
               {currentUser.isAdmin && (
                 <button
                   onClick={() => setCurrentView('admin')}
@@ -423,10 +434,17 @@ function App() {
         )}
         
         {currentView === 'store' && (
-          <WeaponStore 
+          <WeaponStore
             user={currentUser}
             weapons={gameState.weapons}
             onPurchase={handlePurchaseWeapon}
+            onClose={() => setCurrentView('game')}
+          />
+        )}
+
+        {currentView === 'membership' && (
+          <MembershipStore
+            user={currentUser}
             onClose={() => setCurrentView('game')}
           />
         )}
