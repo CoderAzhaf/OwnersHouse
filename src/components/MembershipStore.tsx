@@ -11,15 +11,13 @@ interface MembershipStoreProps {
 interface Membership {
   id: string;
   name: string;
-  monthly_price: number;
-  yearly_price: number;
+  ohis_price: number;
   features: string[];
 }
 
 interface UserMembership {
   id: string;
   membership_id: string;
-  billing_cycle: 'monthly' | 'yearly';
   status: string;
   expires_at: string;
 }
@@ -28,22 +26,19 @@ const DEFAULT_MEMBERSHIPS: Membership[] = [
   {
     id: '1',
     name: 'House Plus',
-    monthly_price: 5,
-    yearly_price: 10,
+    ohis_price: 500000000,
     features: ['Access to exclusive weapons', '2x OHIS earning rate', 'Priority support']
   },
   {
     id: '2',
     name: 'House Pro',
-    monthly_price: 10,
-    yearly_price: 15,
+    ohis_price: 500000000000,
     features: ['All House Plus features', '5x OHIS earning rate', 'Custom profile themes', 'Early access to new features']
   },
   {
     id: '3',
     name: 'House MAX',
-    monthly_price: 20,
-    yearly_price: 30,
+    ohis_price: 500000000000000,
     features: ['All House Pro features', '10x OHIS earning rate', 'Exclusive game modes', 'VIP badge', 'Direct line to admins']
   }
 ];
@@ -53,18 +48,24 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 );
 
+const formatOhis = (ohis: number): string => {
+  if (ohis >= 1e15) {
+    return `${(ohis / 1e15).toFixed(0)} Trillion`;
+  } else if (ohis >= 1e12) {
+    return `${(ohis / 1e12).toFixed(0)} Billion`;
+  } else if (ohis >= 1e9) {
+    return `${(ohis / 1e9).toFixed(0)} Million`;
+  } else if (ohis >= 1e6) {
+    return `${(ohis / 1e6).toFixed(1)}M`;
+  }
+  return ohis.toLocaleString();
+};
+
 export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose }) => {
   const [memberships, setMemberships] = useState<Membership[]>(DEFAULT_MEMBERSHIPS);
   const [userMembership, setUserMembership] = useState<UserMembership | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [selectedCycle, setSelectedCycle] = useState<{ [key: string]: 'monthly' | 'yearly' }>({});
 
   useEffect(() => {
-    const cycles: { [key: string]: 'monthly' | 'yearly' } = {};
-    DEFAULT_MEMBERSHIPS.forEach((m: Membership) => {
-      cycles[m.id] = 'monthly';
-    });
-    setSelectedCycle(cycles);
     loadUserMembership();
   }, [user.id]);
 
@@ -89,16 +90,20 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
   };
 
   const handleSubscribe = async (membershipId: string) => {
-    const cycle = selectedCycle[membershipId];
     const membership = memberships.find(m => m.id === membershipId);
     if (!membership) return;
 
-    const expiresAt = new Date();
-    if (cycle === 'monthly') {
-      expiresAt.setMonth(expiresAt.getMonth() + 1);
-    } else {
-      expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+    if (user.ohis === Infinity) {
+      user.ohis = Number.MAX_SAFE_INTEGER;
     }
+
+    if (typeof user.ohis === 'number' && user.ohis < membership.ohis_price) {
+      alert(`You need ${formatOhis(membership.ohis_price)} OHIS to subscribe to ${membership.name}.`);
+      return;
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
 
     try {
       const realMembershipId = membershipId === '1' ? '6b9b3ebf-f6db-4e7c-94f4-2011d0e90f96' : membershipId === '2' ? '1a22072a-d21e-45ef-a8bc-761d885f06ec' : '02730941-634f-451a-8c87-8ac4ee856502';
@@ -108,7 +113,6 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
         .insert({
           user_id: user.id,
           membership_id: realMembershipId,
-          billing_cycle: cycle,
           status: 'active',
           expires_at: expiresAt.toISOString()
         });
@@ -156,16 +160,6 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
     return 'blue';
   };
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-gray-800 rounded-lg p-8">
-          <p className="text-white">Loading memberships...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
       <div className="bg-gray-800 rounded-lg p-6 max-w-6xl w-full mx-4 my-8">
@@ -177,6 +171,12 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
           >
             <X className="w-6 h-6" />
           </button>
+        </div>
+
+        <div className="mb-6 p-4 bg-yellow-900/30 border border-yellow-500/50 rounded-lg">
+          <p className="text-yellow-300 font-semibold">
+            Your OHIS: <span className="text-yellow-400">{user.ohis === Infinity ? '∞' : formatOhis(user.ohis as number)}</span>
+          </p>
         </div>
 
         {userMembership && (
@@ -197,9 +197,8 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
           {memberships.map((membership) => {
             const Icon = getMembershipIcon(membership.name);
             const color = getMembershipColor(membership.name);
-            const cycle = selectedCycle[membership.id] || 'monthly';
-            const price = cycle === 'monthly' ? membership.monthly_price : membership.yearly_price;
             const isSubscribed = userMembership?.membership_id === membership.id;
+            const canAfford = user.ohis === Infinity || (typeof user.ohis === 'number' && user.ohis >= membership.ohis_price);
 
             return (
               <div
@@ -225,35 +224,10 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
                 </h3>
 
                 <div className="text-center mb-4">
-                  <div className="flex justify-center space-x-2 mb-2">
-                    <button
-                      onClick={() => setSelectedCycle({ ...selectedCycle, [membership.id]: 'monthly' })}
-                      className={`px-3 py-1 rounded ${
-                        cycle === 'monthly' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'
-                      }`}
-                    >
-                      Monthly
-                    </button>
-                    <button
-                      onClick={() => setSelectedCycle({ ...selectedCycle, [membership.id]: 'yearly' })}
-                      className={`px-3 py-1 rounded ${
-                        cycle === 'yearly' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'
-                      }`}
-                    >
-                      Yearly
-                    </button>
+                  <div className="text-3xl font-bold text-white">
+                    {formatOhis(membership.ohis_price)}
                   </div>
-
-                  <div className="text-4xl font-bold text-white">
-                    ${price}
-                    <span className="text-lg text-gray-400">/{cycle === 'monthly' ? 'mo' : 'yr'}</span>
-                  </div>
-
-                  {cycle === 'yearly' && (
-                    <p className="text-green-400 text-sm mt-1">
-                      Save ${(membership.monthly_price * 12 - membership.yearly_price).toFixed(2)}/year
-                    </p>
-                  )}
+                  <p className="text-yellow-300 text-sm mt-1">OHIS</p>
                 </div>
 
                 <ul className="space-y-3 mb-6">
@@ -267,9 +241,11 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
 
                 <button
                   onClick={() => handleSubscribe(membership.id)}
-                  disabled={isSubscribed}
+                  disabled={isSubscribed || !canAfford}
                   className={`w-full py-3 rounded-lg font-semibold transition-colors ${
                     isSubscribed
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                      : !canAfford
                       ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                       : color === 'blue'
                       ? 'bg-blue-600 hover:bg-blue-700 text-white'
@@ -278,7 +254,7 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
                       : 'bg-yellow-600 hover:bg-yellow-700 text-white'
                   }`}
                 >
-                  {isSubscribed ? 'Current Plan' : 'Subscribe Now'}
+                  {isSubscribed ? 'Current Plan' : !canAfford ? 'Insufficient OHIS' : 'Subscribe Now'}
                 </button>
               </div>
             );
@@ -287,8 +263,7 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
 
         <div className="mt-8 p-4 bg-gray-700 rounded-lg">
           <p className="text-gray-300 text-sm text-center">
-            All memberships include access to exclusive features and enhanced gameplay.
-            Cancel anytime with no hidden fees.
+            All memberships grant 1 year of membership. Cancel anytime with no hidden fees.
           </p>
         </div>
       </div>
