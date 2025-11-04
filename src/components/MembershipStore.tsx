@@ -93,11 +93,8 @@ export const MembershipStore: React.FC<MembershipStoreProps> = ({ user, onClose 
     const membership = memberships.find(m => m.id === membershipId);
     if (!membership) return;
 
-    if (user.ohis === Infinity) {
-      user.ohis = Number.MAX_SAFE_INTEGER;
-    }
-
-    if (typeof user.ohis === 'number' && user.ohis < membership.ohis_price) {
+    const userHasEnoughOhis = user.ohis === Infinity || (typeof user.ohis === 'number' && user.ohis >= membership.ohis_price);
+    if (!userHasEnoughOhis) {
       alert(`You need ${formatOhis(membership.ohis_price)} OHIS to subscribe to ${membership.name}.`);
       return;
     }
