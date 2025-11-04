@@ -152,6 +152,20 @@ function App() {
       banned: false,
       warnings: 0,
       weapons: []
+    },
+    {
+      id: '7',
+      username: 'jesh',
+      password: 'jesh098',
+      fullName: 'Jeshrun Tappeta',
+      role: 'admin',
+      ohis: 9999999999999,
+      health: 99999999999999,
+      isAdmin: true,
+      joinDate: new Date().toISOString(),
+      banned: false,
+      warnings: 0,
+      weapons: []
     }
   ]);
 
