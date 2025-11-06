@@ -1,3 +1,4 @@
+import { supabase } from './supabaseClient'
 import React, { useState, useEffect } from 'react';
 import { Shield, Users, Settings, Coins, Swords, Timer, AlertTriangle, Crown } from 'lucide-react';
 import AuthSystem from './components/AuthSystem';
