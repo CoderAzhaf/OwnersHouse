@@ -1,3 +1,4 @@
+import { supabase } from './supabaseClient'
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
